@@ -1,6 +1,6 @@
 {
   "name": "@1hive/contract-helpers-test",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Aragon Assocation <legal@aragon.org>",
   "license": "MIT",
   "engines": {
