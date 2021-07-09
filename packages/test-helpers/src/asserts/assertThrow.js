@@ -101,6 +101,9 @@ async function assertRevert(blockOrPromise, expectedReason, ctx) {
     }
   }
 
+  // Hardhat network includes an extra 'Error: ' prefix. Relevant for running gas profiler
+  error.reason = error.reason.replace('Error: ', '').trim()
+
   // Truffle v5 sometimes adds an extra ' -- Reason given: reason.' to the error message 🤷
   error.reason = error.reason
     .replace(` -- Reason given: ${expectedReason}.`, '')
