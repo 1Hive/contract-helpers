@@ -1,6 +1,4 @@
 const { assert } = require('chai')
-const { isGeth } = require('../node')
-const { decodeErrorReasonFromTx } = require('../decoding')
 
 const ERROR_PREFIX = 'Returned error:'
 const THROW_PREFIX = 'VM Exception while processing transaction: revert'
@@ -18,39 +16,12 @@ async function assertThrows(
       ? await blockOrPromise()
       : await blockOrPromise
   } catch (error) {
-    if (await isGeth(ctx)) {
-      // With geth, we are only provided the transaction receipt and have to decode the failure
-      // ourselves.
-      const status = error.receipt.status
-
-      assert.equal(
-        status,
-        '0x0',
-        `Expected transaction to revert but it executed with status ${status}`
-      )
-      if (!expectedReason.length) {
-        // Note that it is difficult to ascertain invalid jumps or out of gas scenarios
-        // and so we simply pass if no revert message is given
-        return
-      }
-
-      const { tx } = error
-      assert.notEqual(
-        tx,
-        undefined,
-        `Expected error to include transaction hash, cannot assert revert reason ${expectedReason}: ${error}`
-      )
-
-      error.reason = decodeErrorReasonFromTx(tx, ctx)
-      return error
-    } else {
-      const errorMatchesExpected = error.message.search(expectedErrorCode) > -1
-      assert(
-        errorMatchesExpected,
-        `Expected error code "${expectedErrorCode}" but failed with "${error}" instead.`
-      )
-      return error
-    }
+    const errorMatchesExpected = error.message.search(expectedErrorCode) > -1
+    assert(
+      errorMatchesExpected,
+      `Expected error code "${expectedErrorCode}" but failed with "${error}" instead.`
+    )
+    return error
   }
   // assert.fail() for some reason does not have its error string printed 🤷
   assert(
